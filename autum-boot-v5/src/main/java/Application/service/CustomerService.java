@@ -1,13 +1,9 @@
 package Application.service;
 
-import Application.AppConfig;
-import Application.dao.CustomerDAO;
 import Application.dao.ICustomerDAO;
 import Application.domain.Customer;
 import org.autumframework.annotation.Autowired;
-import org.autumframework.annotation.Qualifier;
 import org.autumframework.annotation.Service;
-import org.autumframework.annotation.Value;
 
 @Service(name = "customerService")
 public class CustomerService implements ICustomerService{

@@ -1,5 +1,7 @@
 package Application;
 
+import Application.service.AppConfig;
+import Application.service.IAppConfig;
 import Application.service.ICustomerService;
 import Application.service.IProductService;
 import org.autumframework.annotation.Autowired;
@@ -16,6 +18,9 @@ public class Application implements Runnable{
     @Autowired
     IProductService productService;
 
+    @Autowired
+    IAppConfig appConfig;
+
     public static void main(String[] args) {
         AutumApplication autumApplication = new AutumApplication("Application");
         autumApplication.run(Application.class, args);
@@ -25,5 +30,6 @@ public class Application implements Runnable{
     public void run() {
         customerService.addCustomer("Hadush", "had@gmail.com", "123-456-789");
         productService.addProduct("XGL-120", 345.9, 13);
+        System.out.println(((AppConfig)appConfig).toString());
     }
 }
