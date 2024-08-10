@@ -1,6 +1,6 @@
 package Application.integration;
 
-import Application.AppConfig;
+import Application.service.AppConfig;
 import org.autumframework.annotation.Autowired;
 import org.autumframework.annotation.Service;
 import org.autumframework.annotation.Value;
