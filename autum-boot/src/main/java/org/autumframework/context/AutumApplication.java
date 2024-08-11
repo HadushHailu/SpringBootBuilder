@@ -10,9 +10,13 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class AutumApplication {
     private static List<Object> serviceObject = new ArrayList<>();
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     public AutumApplication(String prefix){
         //Add all classes with @Service annotation
@@ -114,6 +118,19 @@ public class AutumApplication {
                         // Make the method accessible and invoke it with the parameters
                         method.setAccessible(true);
                         method.invoke(theServiceClass, parameterInstances);
+                    }
+
+                    final Object theFinalObject = theServiceClass;
+                    if (method.isAnnotationPresent(Scheduled.class)) {
+                        Scheduled scheduledAnnotation = method.getAnnotation(Scheduled.class);
+                        long fixedRate = scheduledAnnotation.fixedRate();
+                        scheduler.scheduleAtFixedRate(() -> {
+                            try {
+                                method.invoke(theFinalObject);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }, 0, fixedRate, TimeUnit.MILLISECONDS);
                     }
                 }
 

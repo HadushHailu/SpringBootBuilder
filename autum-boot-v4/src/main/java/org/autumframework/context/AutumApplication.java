@@ -5,6 +5,7 @@ import org.autumframework.annotation.Autowired;
 import org.autumframework.annotation.Qualifier;
 import org.autumframework.annotation.Scheduled;
 import org.autumframework.annotation.Service;
+import org.autumframework.execute.FixedRateExecutor;
 import org.reflections.Reflections;
 
 import java.util.concurrent.Executors;
@@ -20,9 +21,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-public class AutumApplication {
+public class AutumApplication{
     private static List<Object> serviceObject = new ArrayList<>();
-    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     public AutumApplication(String prefix){
         //Add all classes with @Service annotation
@@ -43,6 +43,7 @@ public class AutumApplication {
     private void performDependencyInjection(){
         try {
             for (int j = 0; j < serviceObject.size(); j++) {
+                System.out.println("PERFORM DEPENDENCY INJECTION: " +j);
                 Object theServiceClass = serviceObject.get(j);
 
                 //Constructors
@@ -114,15 +115,12 @@ public class AutumApplication {
 
                     final Object theFinalObject = theServiceClass;
                     if (method.isAnnotationPresent(Scheduled.class)) {
+                        System.out.println("@Scheduled object="+theFinalObject);
                         Scheduled scheduledAnnotation = method.getAnnotation(Scheduled.class);
                         long fixedRate = scheduledAnnotation.fixedRate();
-                        scheduler.scheduleAtFixedRate(() -> {
-                            try {
-                                method.invoke(theFinalObject);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }, 0, fixedRate, TimeUnit.MILLISECONDS);
+                        FixedRateExecutor executor = FixedRateExecutor.getInstance(theFinalObject, method, fixedRate); // 1000ms = 1 second
+                        Thread thread = new Thread(executor);
+                        thread.start();
                     }
                 }
 
@@ -179,9 +177,6 @@ public class AutumApplication {
             // Create an instance of the Runnable class
             Runnable runnableInstance = clazz.getDeclaredConstructor().newInstance();
 
-            // Perform dependency injection for the Runnable instance
-            this.performDependencyInjection();
-
             // Inject dependencies into the Runnable instance
             for (Field field : clazz.getDeclaredFields()) {
                 if (field.isAnnotationPresent(Autowired.class)) {
@@ -190,7 +185,6 @@ public class AutumApplication {
                     field.set(runnableInstance, bean);
                 }
             }
-
             // Start a new thread with the Runnable instance
             Thread thread = new Thread(runnableInstance);
             thread.start();
