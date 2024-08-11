@@ -191,9 +191,6 @@ public class AutumApplication {
             // Create an instance of the Runnable class
             Runnable runnableInstance = clazz.getDeclaredConstructor().newInstance();
 
-            // Perform dependency injection for the Runnable instance
-            this.performDependencyInjection();
-
             // Inject dependencies into the Runnable instance
             for (Field field : clazz.getDeclaredFields()) {
                 if (field.isAnnotationPresent(Autowired.class)) {
