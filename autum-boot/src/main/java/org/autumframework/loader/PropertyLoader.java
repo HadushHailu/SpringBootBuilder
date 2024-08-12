@@ -1,4 +1,4 @@
-package org.autumframework.context;
+package org.autumframework.loader;
 
 import java.io.IOException;
 import java.io.InputStream;

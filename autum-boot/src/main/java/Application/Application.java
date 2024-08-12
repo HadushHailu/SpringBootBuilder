@@ -20,7 +20,7 @@ public class Application implements Runnable{
     @Autowired
     private AppConfig config;
 
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(cron = "5 0")
     public void print(){
         System.out.println("printing something");
     }
