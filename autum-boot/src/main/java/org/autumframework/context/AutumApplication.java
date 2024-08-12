@@ -1,6 +1,8 @@
 package org.autumframework.context;
 
 import org.autumframework.annotation.*;
+import org.autumframework.loader.PropertyLoader;
+import org.autumframework.threading.FixedRateScheduler;
 import org.reflections.Reflections;
 
 import java.lang.annotation.Annotation;
@@ -10,14 +12,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class AutumApplication {
     private static List<Object> serviceObject = new ArrayList<>();
-    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
     public AutumApplication(String prefix){
         //Add all classes with @Service annotation
         try {
@@ -42,8 +40,6 @@ public class AutumApplication {
 
         this.performDependencyInjection();
     }
-
-
     private void performDependencyInjection(){
         try {
             for (int j = 0; j < serviceObject.size(); j++) {
@@ -123,14 +119,19 @@ public class AutumApplication {
                     final Object theFinalObject = theServiceClass;
                     if (method.isAnnotationPresent(Scheduled.class)) {
                         Scheduled scheduledAnnotation = method.getAnnotation(Scheduled.class);
-                        long fixedRate = scheduledAnnotation.fixedRate();
-                        scheduler.scheduleAtFixedRate(() -> {
-                            try {
-                                method.invoke(theFinalObject);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }, 0, fixedRate, TimeUnit.MILLISECONDS);
+                        long fixedRate;
+                        String schedulerType = "";
+
+                        if(scheduledAnnotation.cron().isEmpty()){
+                            fixedRate = scheduledAnnotation.fixedRate();
+                            schedulerType = "fixedRate";
+                        }else{
+                            fixedRate = convertCronToPeriod(scheduledAnnotation.cron());
+                            schedulerType = "cron";
+                        }
+                        System.out.println("SCHEDULER THREADING: type="+schedulerType+" period="+fixedRate);
+                        FixedRateScheduler fixedRateScheduler = new FixedRateScheduler(theFinalObject, method, fixedRate);
+                        new Thread(fixedRateScheduler).start();
                     }
                 }
 
@@ -139,7 +140,6 @@ public class AutumApplication {
             e.printStackTrace();
         }
     }
-
     public Object getQualifierBeanOfType(Class<?> interfaceClass, String qualifierValue){
         Object service = null;
         try {
@@ -185,7 +185,6 @@ public class AutumApplication {
         }
         return service;
     }
-
     public void run(Class<? extends Runnable> clazz, String... args) {
         try {
             // Create an instance of the Runnable class
@@ -211,7 +210,6 @@ public class AutumApplication {
             e.printStackTrace();
         }
     }
-
     public Object getContext(Class<?> var){
         Object retObject = null;
         for(Object object: serviceObject){
@@ -242,7 +240,6 @@ public class AutumApplication {
 
         }
     }
-
     private void valueInjection(Field field, Object service) throws IllegalAccessException {
         if (field.isAnnotationPresent(Value.class)) {
             Value valueAnnotation = field.getAnnotation(Value.class);
@@ -260,7 +257,6 @@ public class AutumApplication {
             }
         }
     }
-
     private Object convertValue(String propertyValue, Class<?> targetType) {
         if (targetType == String.class) {
             return propertyValue;
@@ -272,4 +268,18 @@ public class AutumApplication {
         // Add more conversions as needed
         return null;
     }
+    public static long convertCronToPeriod(String cron) {
+        String[] parts = cron.split(" ");
+        if (parts.length != 2) {
+            throw new IllegalArgumentException("Invalid cron expression: " + cron);
+        }
+
+        int seconds = Integer.parseInt(parts[0]);  // Seconds part (first field)
+        int minutes = Integer.parseInt(parts[1]);  // Minutes part (second field)
+
+        // Calculate period in milliseconds
+        //System.out.println(" [CRON] seconds="+seconds+" minutes="+minutes);
+        return (TimeUnit.MINUTES.toSeconds(minutes) + seconds)*1000;
+    }
+
 }
