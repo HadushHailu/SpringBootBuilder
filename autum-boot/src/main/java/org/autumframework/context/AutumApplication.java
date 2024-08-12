@@ -17,18 +17,32 @@ import java.util.concurrent.TimeUnit;
 public class AutumApplication {
     private static List<Object> serviceObject = new ArrayList<>();
     public AutumApplication(String prefix){
+
+
+
+
         //Add all classes with @Service annotation
         try {
+            String propertyValue = PropertyLoader.getConfigProperty("profiles", "active");
             Reflections reflections = new Reflections(prefix);
             Set<Class<?>> ImplServiceObjectType = reflections.getTypesAnnotatedWith(Service.class);
             for (Class<?> implementationClass : ImplServiceObjectType) {
-                serviceObject.add((Object) implementationClass.getDeclaredConstructor().newInstance());
+                if(implementationClass.isAnnotationPresent(Profile.class)){
+                    Profile profileType = implementationClass.getAnnotation(Profile.class);
+                    if(propertyValue.equals(profileType.value())){
+                        serviceObject.add((Object) implementationClass.getDeclaredConstructor().newInstance());
+                    }
+                }else{
+                    serviceObject.add((Object) implementationClass.getDeclaredConstructor().newInstance());
+                }
             }
+
 
             ImplServiceObjectType = reflections.getTypesAnnotatedWith(ConfigurationProperties.class);
             for (Class<?> implementationClass : ImplServiceObjectType) {
                 ConfigurationProperties configProps=implementationClass.getAnnotation(ConfigurationProperties.class);
                 String prefixData=configProps.prefix();
+                System.out.println("[****] TEST1: "+prefixData);
                 Object instance = implementationClass.getDeclaredConstructor().newInstance();
                 serviceObject.add(instance);
                 injectConfigurationProperties(instance, prefixData);
@@ -229,6 +243,7 @@ public class AutumApplication {
             }else {
                 propertyName = field.getName();
             }
+            System.out.println("[+++++++] Inject Configuration Properites: prefix="+prefix+" propertyName="+propertyName);
             String propertyValue = PropertyLoader.getConfigProperty(prefix, propertyName);
 
             if (propertyValue != null) {

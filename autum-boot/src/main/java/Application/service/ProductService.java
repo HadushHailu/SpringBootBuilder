@@ -13,7 +13,6 @@ import org.autumframework.annotation.Service;
 @Service(name = "productService")
 public class ProductService implements IProductService{
     @Autowired
-    @Qualifier("MockProductDAO")
     private IProductDAO iProductDAO;
 
     private ILogger logger;
