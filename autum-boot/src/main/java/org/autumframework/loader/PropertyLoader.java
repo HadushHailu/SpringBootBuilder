@@ -8,7 +8,7 @@ import java.util.Properties;
 
 public class PropertyLoader {
 
-    private static Properties                       properties       = new Properties();
+    private static Properties  properties       = new Properties();
     private static Map<String, Map<String, String>> configProperties = new HashMap<>();
 
     static {
