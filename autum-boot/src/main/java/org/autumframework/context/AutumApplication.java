@@ -2,6 +2,7 @@ package org.autumframework.context;
 
 import org.autumframework.annotation.EventListener;
 import org.autumframework.annotation.*;
+import org.autumframework.customClass.CustomMethod;
 import org.autumframework.event.ApplicationEvent;
 import org.autumframework.loader.PropertyLoader;
 import org.autumframework.threading.FixedRateScheduler;
@@ -16,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 public class AutumApplication {
     private static List<Object>        serviceObject = new ArrayList<>();
-    private static Map<Object, Map<Object,Method>> events = new HashMap<>();
+    private static Map<Object, Map<Object, CustomMethod>> events = new HashMap<>();
 
     public AutumApplication(String prefix){
 
@@ -161,11 +162,18 @@ public class AutumApplication {
                         Class<?>[] parameterTypes = method.getParameterTypes();
                         for (Class<?> paramType : parameterTypes) {
 
-                            Map<Object,Method> methods= events.get(paramType.getName());
+                            Map<Object,CustomMethod> methods= events.get(paramType.getName());
                             if(methods == null){
                                 methods= new HashMap<>();
                             }
-                            methods.put(theServiceClass, method);
+
+                            //Does the method have @Async
+                            if(method.isAnnotationPresent(Async.class)){
+                                methods.put(theServiceClass, new CustomMethod(method, true));
+                            }else{
+                                methods.put(theServiceClass, new CustomMethod(method, false));
+                            }
+
                             events.put(paramType.getName(), methods);
                         }
                     }

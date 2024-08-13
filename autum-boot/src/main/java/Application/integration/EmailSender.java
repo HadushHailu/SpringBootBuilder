@@ -2,10 +2,7 @@ package Application.integration;
 
 import Application.AppConfig;
 import Application.service.CustomerEvent;
-import org.autumframework.annotation.Autowired;
-import org.autumframework.annotation.EventListener;
-import org.autumframework.annotation.Service;
-import org.autumframework.annotation.Value;
+import org.autumframework.annotation.*;
 
 @Service
 public class EmailSender implements IEmailSender{
@@ -18,6 +15,12 @@ public class EmailSender implements IEmailSender{
 
     @EventListener
     public void log(CustomerEvent customerEvent) {
+        System.out.println("EmailSender: eventListener Called");
+        try{
+            Thread.sleep(10000);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         System.out.println("Email event:" + customerEvent);;
     }
 }
