@@ -1,6 +1,8 @@
 package org.autumframework.context;
 
+import org.autumframework.annotation.EventListener;
 import org.autumframework.annotation.*;
+import org.autumframework.event.ApplicationEvent;
 import org.autumframework.loader.PropertyLoader;
 import org.autumframework.threading.FixedRateScheduler;
 import org.reflections.Reflections;
@@ -9,13 +11,13 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class AutumApplication {
-    private static List<Object> serviceObject = new ArrayList<>();
+    private static List<Object>        serviceObject = new ArrayList<>();
+    private static Map<Object, Map<Object,Method>> events = new HashMap<>();
+
     public AutumApplication(String prefix){
 
 
@@ -47,6 +49,13 @@ public class AutumApplication {
                 serviceObject.add(instance);
                 injectConfigurationProperties(instance, prefixData);
             }
+
+            reflections = new Reflections("org.autumframework");
+            ImplServiceObjectType = reflections.getTypesAnnotatedWith(Service.class);
+            for (Class<?> implementationClass : ImplServiceObjectType) {
+                serviceObject.add((Object) implementationClass.getDeclaredConstructor().newInstance());
+            }
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -147,12 +156,28 @@ public class AutumApplication {
                         FixedRateScheduler fixedRateScheduler = new FixedRateScheduler(theFinalObject, method, fixedRate);
                         new Thread(fixedRateScheduler).start();
                     }
+
+                    if(method.isAnnotationPresent(EventListener.class)){
+                        Class<?>[] parameterTypes = method.getParameterTypes();
+                        for (Class<?> paramType : parameterTypes) {
+
+                            Map<Object,Method> methods= events.get(paramType.getName());
+                            if(methods == null){
+                                methods= new HashMap<>();
+                            }
+                            methods.put(theServiceClass, method);
+                            events.put(paramType.getName(), methods);
+                        }
+                    }
                 }
 
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        ApplicationEvent event= new ApplicationEvent();
+        event.setEvents(events);
     }
     public Object getQualifierBeanOfType(Class<?> interfaceClass, String qualifierValue){
         Object service = null;
