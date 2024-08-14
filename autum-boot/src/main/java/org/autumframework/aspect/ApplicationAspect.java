@@ -29,7 +29,7 @@ public class ApplicationAspect implements InvocationHandler {
                     //If the annotation is @Around
                     if (k.isAnnotationPresent(Around.class)) {
                         k.setAccessible(true);
-                        k.invoke(v);
+                        result = k.invoke(v, target, method, args);
                     } else {
                         //IF the annotation is @Before or @After
                         if (k.isAnnotationPresent(Before.class)) {

@@ -35,12 +35,12 @@ public class ProductService implements IProductService{
     public void addProduct(String id, double price, int quantity){
         Product product = new Product(id, price, quantity);
         iProductDAO.addProduct(product);
-        logger.log();
-        try {
-            emailSender.sendEmail();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+//        logger.log();
+//        try {
+//            emailSender.sendEmail();
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
 
     }
 }

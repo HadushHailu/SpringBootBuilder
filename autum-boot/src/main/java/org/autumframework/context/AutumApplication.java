@@ -70,7 +70,7 @@ public class AutumApplication {
                     //Before Class
                     if(method.isAnnotationPresent(Before.class)){
                         Before annotation=method.getAnnotation(Before.class);
-                        System.out.println("----aop-------"+annotation.pointCut());
+                        System.out.println("----aop------- "+annotation.pointCut());
                         methodMap=aopMethods.get(annotation.pointCut());
                         if(methodMap==null){
                             methodMap=new HashMap<>();
@@ -82,7 +82,19 @@ public class AutumApplication {
                     //After Class
                     else if(method.isAnnotationPresent(After.class)){
                         After annotation=method.getAnnotation(After.class);
-                        System.out.println("----aop-------"+annotation.pointCut());
+                        System.out.println("----aop------- "+annotation.pointCut());
+                        methodMap=aopMethods.get(annotation.pointCut());
+                        if(methodMap==null){
+                            methodMap=new HashMap<>();
+                        }
+                        methodMap.put(method,aopObj);
+                        aopMethods.put(annotation.pointCut(), methodMap);
+                    }
+
+                    //Around Class
+                    else if(method.isAnnotationPresent(Around.class)){
+                        Around annotation=method.getAnnotation(Around.class);
+                        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ "+annotation.pointCut());
                         methodMap=aopMethods.get(annotation.pointCut());
                         if(methodMap==null){
                             methodMap=new HashMap<>();
