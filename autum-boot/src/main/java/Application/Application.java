@@ -25,8 +25,7 @@ public class Application implements Runnable{
     }
 
     public static void main(String[] args) {
-        AutumApplication autumApplication = new AutumApplication("Application");
-        autumApplication.run(Application.class, args);
+        AutumApplication.run(Application.class, args);
     }
 
     @Override

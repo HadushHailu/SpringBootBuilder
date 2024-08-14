@@ -294,23 +294,15 @@ public class AutumApplication {
         }
         return service;
     }
-    public void run(Class<? extends Runnable> clazz, String... args) {
+    public static void run(Class<? extends Runnable> clazz, String... args) {
         try {
             // Create an instance of the Runnable class
-            Runnable runnableInstance = clazz.getDeclaredConstructor().newInstance();
-
-            // Inject dependencies into the Runnable instance
-            for (Field field : clazz.getDeclaredFields()) {
-                if (field.isAnnotationPresent(Autowired.class)) {
-                    field.setAccessible(true);
-                    Object bean = this.getServiceBeanOfType(field.getType());
-                    field.set(runnableInstance, bean);
-                }
-                if (field.isAnnotationPresent(Value.class)) {
-                    valueInjection(field,runnableInstance);
-                }
-            }
-
+            AutumApplication autumApplication = new AutumApplication("Application");
+            Object myApplication = null;
+            for(Object object: serviceObject)
+                if(object.getClass().equals(clazz))
+                    myApplication = object;
+            Runnable runnableInstance = (Runnable) myApplication;
             // Start a new thread with the Runnable instance
             Thread thread = new Thread(runnableInstance);
             thread.start();
