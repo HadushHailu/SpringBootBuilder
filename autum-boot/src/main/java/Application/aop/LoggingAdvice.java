@@ -13,10 +13,10 @@ public class LoggingAdvice {
         System.out.println("AOP set name method");
     }
 
-//    @Before(pointCut = "ProductService.addProduct")
-//    public void traceBeforeMethodProduct() {
-//        System.out.println("~~~~~~~~~~ ProductService logging advice");
-//    }
+    @Before(pointCut = "ProductService.addProduct")
+    public void traceBeforeMethodProduct() {
+        System.out.println("~~~~~~~~~~ ProductService logging advice");
+    }
 
     @After(pointCut = "CustomerService.testingAop")
     public void traceAfterMethod() {

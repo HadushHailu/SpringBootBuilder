@@ -381,21 +381,46 @@ public class AutumApplication {
     }
 
     //Proxy for AOP
-    private Class<?> findInterfaceFromClass(Object theServiceClass){
-        System.out.println();
-        ICustomerService iCustomerService = new CustomerService();
-        return ICustomerService.class;
+    private Object findInterfaceFromClass(Object theServiceClass){
+        try {
+            // Get the list of interfaces implemented by the class
+            Class<?>[] interfaces = theServiceClass.getClass().getInterfaces();
+
+            System.out.println("&&&&&&&&&&&&&&&&: interfaces="+interfaces);
+            // Assuming the class implements only one interface
+            if (interfaces.length == 1) {
+                Class<?> targetInterface = interfaces[0];
+                System.out.println("Interface found: " + targetInterface.getName());
+
+                // Create a new instance of the service class
+                Object serviceInstance = theServiceClass.getClass().getDeclaredConstructor().newInstance();
+
+                // Return the new instance cast to the interface
+                return targetInterface.cast(serviceInstance);
+            } else {
+                System.out.println("The class implements more than one interface or none.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null; // Return null if something goes wrong
 
     }
     private Object createProxy(Object theServiceClass, Method method){
-        Map<Method,Object> aopMethodCaching = aopMethods.get(theServiceClass.getClass().getSimpleName() + "." + method.getName());
+        Map<Method, Object> aopMethodCaching = aopMethods.get(theServiceClass.getClass().getSimpleName() + "." + method.getName());
+        // Find the interface and create a new instance of the service class
+        Object serviceInstance = this.findInterfaceFromClass(theServiceClass);
+        System.out.println("Service Instance: " + serviceInstance);
+        Class<?> theInterface = serviceInstance.getClass().getInterfaces()[0]; // Assuming only one interface
+        System.out.println("Interface: " + theInterface.getName());
 
-        Class<?> theInterface = this.findInterfaceFromClass(theServiceClass);
-        Object           instance         = this.getServiceBeanOfType(theServiceClass.getClass());
-        System.out.println(":-::-: "+instance.getClass() +","+theServiceClass.getClass() );
-        Object proxyInstance=  Proxy.newProxyInstance(theInterface.getClassLoader(),
-                                                      new Class[]{theInterface},
-                                                      new ApplicationAspect(theServiceClass, aopMethodCaching));
+        // The proxyInstance
+        Object proxyInstance = Proxy.newProxyInstance(
+                theInterface.getClassLoader(),
+                new Class[]{theInterface},
+                new ApplicationAspect(theServiceClass, aopMethodCaching)
+        );
 
         return proxyInstance;
     }
