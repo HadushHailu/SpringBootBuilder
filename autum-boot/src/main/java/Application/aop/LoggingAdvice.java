@@ -10,29 +10,22 @@ import java.lang.reflect.Method;
 @Aspect
 public class LoggingAdvice {
 
-    @Before(pointCut = "CustomerService.testingAop")
+    @Before(pointCut = "CustomerService.addCustomer")
     public void traceBeforeMethod() {
-        System.out.println("2");
-        System.out.println("AOP set name method");
+        System.out.println("AOP: @Before CustomerService.addCustomer");
     }
 
     @Around(pointCut = "ProductService.addProduct")
     public Object traceBeforeMethodProduct(Object target, Method method, Object[] args) {
-        System.out.println("~~~~~~~~~~ ProductService logging advice -- BEFORE");
+        System.out.println("AOP: @Around ProductService.addProduct -- 1");
         Object object = null;
         try {
             object = method.invoke(target,args);
         }catch (Exception e){
             e.printStackTrace();
         }
-        System.out.println("~~~~~~~~~~ ProductService logging advice -- AFTER");
+        System.out.println("AOP: @Around ProductService.addProduct --2");
         return object;
-    }
-
-    @After(pointCut = "CustomerService.testingAop")
-    public void traceAfterMethod() {
-        System.out.println("4");
-        System.out.println("AOP set name method:4");
     }
 
 }

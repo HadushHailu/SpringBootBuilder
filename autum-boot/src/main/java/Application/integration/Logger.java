@@ -7,8 +7,8 @@ import org.autumframework.annotation.Service;
 
 @Service
 public class Logger implements ILogger{
-    public void log(){
-        System.out.println("logging");
+    public void log(String message){
+        System.out.println("Logger: logging="+message);
     }
 
     @Async

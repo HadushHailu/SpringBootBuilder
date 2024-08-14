@@ -8,15 +8,7 @@ public class EmailSender implements IEmailSender{
     @Value("app.outgoingmail")
     private String outgoingmail;
 
-    @Async
     public void sendEmail() {
-        try {
-
-            Thread thread = new Thread();
-            thread.sleep(1000);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
         System.out.println("Email sent to="+outgoingmail);
     }
 

@@ -50,7 +50,6 @@ public class AutumApplication {
             for (Class<?> implementationClass : ImplServiceObjectType) {
                 ConfigurationProperties configProps=implementationClass.getAnnotation(ConfigurationProperties.class);
                 String prefixData=configProps.prefix();
-                System.out.println("[****] TEST1: "+prefixData);
                 Object instance = implementationClass.getDeclaredConstructor().newInstance();
                 serviceObject.add(instance);
                 injectConfigurationProperties(instance, prefixData);
@@ -70,7 +69,6 @@ public class AutumApplication {
                     //Before Class
                     if(method.isAnnotationPresent(Before.class)){
                         Before annotation=method.getAnnotation(Before.class);
-                        System.out.println("----aop------- "+annotation.pointCut());
                         methodMap=aopMethods.get(annotation.pointCut());
                         if(methodMap==null){
                             methodMap=new HashMap<>();
@@ -82,7 +80,6 @@ public class AutumApplication {
                     //After Class
                     else if(method.isAnnotationPresent(After.class)){
                         After annotation=method.getAnnotation(After.class);
-                        System.out.println("----aop------- "+annotation.pointCut());
                         methodMap=aopMethods.get(annotation.pointCut());
                         if(methodMap==null){
                             methodMap=new HashMap<>();
@@ -94,7 +91,6 @@ public class AutumApplication {
                     //Around Class
                     else if(method.isAnnotationPresent(Around.class)){
                         Around annotation=method.getAnnotation(Around.class);
-                        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ "+annotation.pointCut());
                         methodMap=aopMethods.get(annotation.pointCut());
                         if(methodMap==null){
                             methodMap=new HashMap<>();
@@ -102,7 +98,6 @@ public class AutumApplication {
                         methodMap.put(method,aopObj);
                         aopMethods.put(annotation.pointCut(), methodMap);
                     }
-                    System.out.println("<<<<<<<@>>>>>>> aopMethods="+aopMethods);
                 }
             }
 
@@ -126,7 +121,6 @@ public class AutumApplication {
 
                 //Constructors
                 for (Constructor<?> constructor : theServiceClass.getClass().getDeclaredConstructors()) {
-                    System.out.println("Constructor: "+constructor.getName() + " "+constructor.getParameterTypes().length);
                     if (constructor.isAnnotationPresent(Autowired.class)) {
                         // Get parameter types of the constructor
                         Class<?>[] parameterTypes = constructor.getParameterTypes();
@@ -135,13 +129,11 @@ public class AutumApplication {
                         // For each parameter, find the corresponding bean
                         for (int i = 0; i < parameterTypes.length; i++) {
                             parameterInstances[i] = this.getServiceBeanOfType(parameterTypes[i]);
-                            System.out.println(parameterInstances[i]);
                         }
 
                         // Make the constructor accessible and create a new instance
                         constructor.setAccessible(true);
                         try {
-                            System.out.println("creating new instance");
                             Object newInstance = constructor.newInstance(parameterInstances);
                             serviceObject.set(j, newInstance);
                             theServiceClass = newInstance;
@@ -208,7 +200,6 @@ public class AutumApplication {
                             fixedRate = convertCronToPeriod(scheduledAnnotation.cron());
                             schedulerType = "cron";
                         }
-                        System.out.println("SCHEDULER THREADING: type="+schedulerType+" period="+fixedRate);
                         FixedRateScheduler fixedRateScheduler = new FixedRateScheduler(theFinalObject, method, fixedRate);
                         new Thread(fixedRateScheduler).start();
                     }
@@ -266,7 +257,6 @@ public class AutumApplication {
         return service;
     }
     public Object getServiceBeanOfType(Class<?> interfaceClass){
-        System.out.println(interfaceClass);
         Object service = null;
         boolean matchingInterfaceFound = false;
         try {
@@ -278,7 +268,6 @@ public class AutumApplication {
                 Class<?>[] interfaces = theClass.getClass().getInterfaces();
                 for (Class<?> theInterface : interfaces) {
                     if (theInterface.getName().contentEquals(interfaceClass.getName())){
-                        System.out.println("+++++++++++++ Matching Interface="+theInterface.getName()+" corresponding class="+theClass.getClass());
                         if(matchingInterfaceFound){
                             throw new RuntimeException("Multiple interface of " + interfaceClass.getName() + " found");
                         }
@@ -330,7 +319,7 @@ public class AutumApplication {
             }else {
                 propertyName = field.getName();
             }
-            System.out.println("[+++++++] Inject Configuration Properites: prefix="+prefix+" propertyName="+propertyName);
+
             String propertyValue = PropertyLoader.getConfigProperty(prefix, propertyName);
 
             if (propertyValue != null) {
@@ -380,7 +369,6 @@ public class AutumApplication {
         int minutes = Integer.parseInt(parts[1]);  // Minutes part (second field)
 
         // Calculate period in milliseconds
-        //System.out.println(" [CRON] seconds="+seconds+" minutes="+minutes);
         return (TimeUnit.MINUTES.toSeconds(minutes) + seconds)*1000;
     }
 
@@ -390,11 +378,9 @@ public class AutumApplication {
             // Get the list of interfaces implemented by the class
             Class<?>[] interfaces = theServiceClass.getClass().getInterfaces();
 
-            System.out.println("&&&&&&&&&&&&&&&&: interfaces="+interfaces);
             // Assuming the class implements only one interface
             if (interfaces.length == 1) {
                 Class<?> targetInterface = interfaces[0];
-                System.out.println("Interface found: " + targetInterface.getName());
 
                 // Create a new instance of the service class
                 Object serviceInstance = theServiceClass.getClass().getDeclaredConstructor().newInstance();
@@ -415,9 +401,7 @@ public class AutumApplication {
         Map<Method, Object> aopMethodCaching = aopMethods.get(theServiceClass.getClass().getSimpleName() + "." + method.getName());
         // Find the interface and create a new instance of the service class
         Object serviceInstance = this.findInterfaceFromClass(theServiceClass);
-        System.out.println("Service Instance: " + serviceInstance);
         Class<?> theInterface = serviceInstance.getClass().getInterfaces()[0]; // Assuming only one interface
-        System.out.println("Interface: " + theInterface.getName());
 
         // The proxyInstance
         Object proxyInstance = Proxy.newProxyInstance(

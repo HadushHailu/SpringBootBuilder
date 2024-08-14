@@ -24,11 +24,11 @@ public class ApplicationEvent {
         Map<Object,CustomMethod> methods = events.get(object.getClass().getName());
         if(methods != null) {
             methods.forEach((k,v)->{
-                System.out.println("[=============++++] "+k.getClass()+" isAsync="+v.isAsync());
+                //System.out.println("[=============++++] "+k.getClass()+" isAsync="+v.isAsync());
                 if(v.isAsync()){
-                    System.out.println("[========+++++] Application event started");
+                    //System.out.println("[========+++++] Application event started");
                     new Thread(new AsyncExecutor(v.getMethod(), k, object)).start();
-                    System.out.println("[========+++++] Application event finished");
+                    //System.out.println("[========+++++] Application event finished");
                 }else{
                     this.serialExecutor(v.getMethod(), k, object);
                 }
