@@ -14,7 +14,7 @@ public class Logger implements ILogger{
     @Async
     @EventListener
     public void eventLog(CustomerEvent customerEvent) {
-        System.out.println("Logger: eventListener Called");
+        System.out.println("Logger: eventListener Called:");
         try{
             Thread.sleep(10000);
         }catch (Exception e){

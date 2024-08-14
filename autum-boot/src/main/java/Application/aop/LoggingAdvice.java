@@ -12,19 +12,19 @@ public class LoggingAdvice {
 
     @Before(pointCut = "CustomerService.addCustomer")
     public void traceBeforeMethod() {
-        System.out.println("AOP: @Before CustomerService.addCustomer");
+        System.out.println("LoggingAdvice: @Before CustomerService.addCustomer");
     }
 
     @Around(pointCut = "ProductService.addProduct")
     public Object traceBeforeMethodProduct(Object target, Method method, Object[] args) {
-        System.out.println("AOP: @Around ProductService.addProduct -- 1");
+        System.out.println("LoggingAdvice: @Around ProductService.addProduct -- 1");
         Object object = null;
         try {
             object = method.invoke(target,args);
         }catch (Exception e){
             e.printStackTrace();
         }
-        System.out.println("AOP: @Around ProductService.addProduct --2");
+        System.out.println("LoggingAdvice: @Around ProductService.addProduct -- 2");
         return object;
     }
 

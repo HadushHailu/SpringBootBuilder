@@ -15,7 +15,7 @@ public class ProductDAO implements IProductDAO {
 
     public void save(Product product){
         productHashMap.put(product.getId(), product);
-        System.out.println("[****************]Product saved!");
+        System.out.println("ProductDAO: Product saved!");
     }
 
     public Product find(String name){

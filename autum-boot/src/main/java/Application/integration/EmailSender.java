@@ -9,12 +9,13 @@ public class EmailSender implements IEmailSender{
     private String outgoingmail;
 
     public void sendEmail() {
-        System.out.println("Email sent to="+outgoingmail);
+        System.out.println("EmailSender: Email sent to="+outgoingmail);
     }
 
+    @Async
     @EventListener
     public void log(CustomerEvent customerEvent) {
-        System.out.println("EmailSender: eventListener Called");
+        System.out.println("EmailSender: eventListener Called:");
         try{
             Thread.sleep(10000);
         }catch (Exception e){

@@ -3,7 +3,7 @@ import org.autumframework.annotation.ConfigurationProperties;
 import org.autumframework.annotation.Value;
 
 @ConfigurationProperties(prefix = "app")
-public class AppConfig {
+public class ApplicationConfiguration {
 
     @Value("name")
     private String name;
@@ -28,4 +28,11 @@ public class AppConfig {
         this.timeout = timeout;
     }
 
+    @Override
+    public String toString() {
+        return "ApplicationConfiguration{" +
+                "name='" + name + '\'' +
+                ", timeout=" + timeout +
+                '}';
+    }
 }

@@ -14,7 +14,7 @@ public class MockProductDAO implements IProductDAO{
 
     public void save(Product product){
         productHashMap.put(product.getId(), product);
-        System.out.println("[****************] MockProduct saved!");
+        System.out.println("MockProductDAO: Product saved!");
     }
 
     public Product find(String name){

@@ -34,12 +34,6 @@ public class ProductService implements IProductService{
         this.emailSender = emailSender;
     }
 
-    @Scheduled(cron = "5 0")
-    public void scheduledLogAllProduct(){
-        System.out.println("====== Scheduled logging: "+ LocalTime.now() +" =====");
-        logger.log("All products");
-    }
-
     public void addProduct(String id, double price, int quantity){
         Product product = new Product(id, price, quantity);
         iProductDAO.save(product);

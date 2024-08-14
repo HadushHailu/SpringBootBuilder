@@ -13,7 +13,7 @@ public class CustomerDAO implements ICustomerDAO {
 
     public void save(Customer customer){
         customerHashMap.put(customer.getName(), customer);
-        System.out.println("customer saved!");
+        System.out.println("CustomerDAO: customer saved!");
     }
     public Customer find(String name){
         return customerHashMap.get(name);
