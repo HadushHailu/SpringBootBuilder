@@ -1,7 +1,10 @@
 package org.autumframework.context;
 
+import Application.dao.IProductDAO;
+import Application.dao.ProductDAO;
 import Application.service.CustomerService;
 import Application.service.ICustomerService;
+import Application.service.IProductService;
 import org.autumframework.annotation.EventListener;
 import org.autumframework.annotation.*;
 import org.autumframework.aspect.ApplicationAspect;
@@ -26,10 +29,6 @@ public class AutumApplication {
     private static List<Object>        aopClasses = new ArrayList<>();
 
     public AutumApplication(String prefix){
-
-
-
-
         //Add all classes with @Service annotation
         try {
             String propertyValue = PropertyLoader.getConfigProperty("profiles", "active");
@@ -91,6 +90,7 @@ public class AutumApplication {
                         methodMap.put(method,aopObj);
                         aopMethods.put(annotation.pointCut(), methodMap);
                     }
+                    System.out.println("<<<<<<<@>>>>>>> aopMethods="+aopMethods);
                 }
             }
 
@@ -266,7 +266,7 @@ public class AutumApplication {
                 Class<?>[] interfaces = theClass.getClass().getInterfaces();
                 for (Class<?> theInterface : interfaces) {
                     if (theInterface.getName().contentEquals(interfaceClass.getName())){
-                        System.out.println(theInterface.getName());
+                        System.out.println("+++++++++++++ Matching Interface="+theInterface.getName()+" corresponding class="+theClass.getClass());
                         if(matchingInterfaceFound){
                             throw new RuntimeException("Multiple interface of " + interfaceClass.getName() + " found");
                         }
@@ -381,14 +381,20 @@ public class AutumApplication {
     }
 
     //Proxy for AOP
+    private Class<?> findInterfaceFromClass(Object theServiceClass){
+        System.out.println();
+        ICustomerService iCustomerService = new CustomerService();
+        return ICustomerService.class;
+
+    }
     private Object createProxy(Object theServiceClass, Method method){
         Map<Method,Object> aopMethodCaching = aopMethods.get(theServiceClass.getClass().getSimpleName() + "." + method.getName());
 
-        ICustomerService iCustomerService =new CustomerService();
+        Class<?> theInterface = this.findInterfaceFromClass(theServiceClass);
         Object           instance         = this.getServiceBeanOfType(theServiceClass.getClass());
         System.out.println(":-::-: "+instance.getClass() +","+theServiceClass.getClass() );
-        Object proxyInstance=  Proxy.newProxyInstance(ICustomerService.class.getClassLoader(),
-                                                      new Class[]{ICustomerService.class},
+        Object proxyInstance=  Proxy.newProxyInstance(theInterface.getClassLoader(),
+                                                      new Class[]{theInterface},
                                                       new ApplicationAspect(theServiceClass, aopMethodCaching));
 
         return proxyInstance;

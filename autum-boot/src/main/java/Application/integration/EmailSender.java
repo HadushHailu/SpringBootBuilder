@@ -1,6 +1,5 @@
 package Application.integration;
 
-import Application.AppConfig;
 import Application.service.CustomerEvent;
 import org.autumframework.annotation.*;
 

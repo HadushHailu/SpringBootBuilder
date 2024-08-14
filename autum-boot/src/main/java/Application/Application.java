@@ -1,13 +1,12 @@
 package Application;
 
+import Application.config.AppConfig;
 import Application.service.ICustomerService;
 import Application.service.IProductService;
 import org.autumframework.annotation.Autowired;
 import org.autumframework.annotation.Scheduled;
 import org.autumframework.annotation.Service;
 import org.autumframework.context.AutumApplication;
-
-import java.util.List;
 
 @Service
 public class Application implements Runnable{

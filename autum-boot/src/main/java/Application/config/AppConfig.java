@@ -1,4 +1,4 @@
-package Application;
+package Application.config;
 import org.autumframework.annotation.ConfigurationProperties;
 import org.autumframework.annotation.Value;
 
