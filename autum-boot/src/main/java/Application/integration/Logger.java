@@ -7,14 +7,14 @@ import org.autumframework.annotation.Service;
 
 @Service
 public class Logger implements ILogger{
-    public void log(){
-        System.out.println("logging");
+    public void log(String message){
+        System.out.println("Logger: logging="+message);
     }
 
     @Async
     @EventListener
     public void eventLog(CustomerEvent customerEvent) {
-        System.out.println("Logger: eventListener Called");
+        System.out.println("Logger: eventListener Called:");
         try{
             Thread.sleep(10000);
         }catch (Exception e){
