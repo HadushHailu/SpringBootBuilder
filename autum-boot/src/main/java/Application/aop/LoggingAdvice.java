@@ -18,10 +18,10 @@ public class LoggingAdvice {
         System.out.println("~~~~~~~~~~ ProductService logging advice");
     }
 
-    @After(pointCut = "CustomerService.testingAop")
-    public void traceAfterMethod() {
-        System.out.println("4");
-        System.out.println("AOP set name method:4");
-    }
+//    @After(pointCut = "CustomerService.testingAop")
+//    public void traceAfterMethod() {
+//        System.out.println("4");
+//        System.out.println("AOP set name method:4");
+//    }
 
 }

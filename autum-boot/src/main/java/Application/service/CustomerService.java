@@ -24,7 +24,15 @@ public class CustomerService implements ICustomerService{
     @Override
     public void testingAop(String name){
         System.out.println("3");
-        System.out.println("Testing from Service:"+name);
+        System.out.println("testingAop: Testing from Service:"+name);
     }
+
+    @Override
+    public void testingAop2(String name){
+        System.out.println("3");
+        System.out.println("testingAop2: Testing from Service:"+name);
+    }
+
+
 
 }
