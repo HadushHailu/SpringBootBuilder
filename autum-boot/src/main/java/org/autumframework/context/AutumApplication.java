@@ -1,7 +1,10 @@
 package org.autumframework.context;
 
+import Application.service.CustomerService;
+import Application.service.ICustomerService;
 import org.autumframework.annotation.EventListener;
 import org.autumframework.annotation.*;
+import org.autumframework.aspect.ApplicationAspect;
 import org.autumframework.customClass.CustomMethod;
 import org.autumframework.event.ApplicationEvent;
 import org.autumframework.loader.PropertyLoader;
@@ -12,12 +15,15 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class AutumApplication {
     private static List<Object>        serviceObject = new ArrayList<>();
     private static Map<Object, Map<Object, CustomMethod>> events = new HashMap<>();
+    private static Map<Object, Map<Method,Object>> aopMethods = new HashMap<>();
+    private static List<Object>        aopClasses = new ArrayList<>();
 
     public AutumApplication(String prefix){
 
@@ -49,6 +55,43 @@ public class AutumApplication {
                 Object instance = implementationClass.getDeclaredConstructor().newInstance();
                 serviceObject.add(instance);
                 injectConfigurationProperties(instance, prefixData);
+            }
+
+            //AOP annotation Class getting
+            ImplServiceObjectType = reflections.getTypesAnnotatedWith(Aspect.class);
+            for (Class<?> implementationClass : ImplServiceObjectType) {
+                aopClasses.add((Object) implementationClass.getDeclaredConstructor().newInstance());
+            }
+            for (Object aopObj: aopClasses){
+                Method[] methods=aopObj.getClass().getDeclaredMethods();
+                Map<Method,Object> methodMap=null;
+
+                for(Method method: methods){
+
+                    //Before Class
+                    if(method.isAnnotationPresent(Before.class)){
+                        Before annotation=method.getAnnotation(Before.class);
+                        System.out.println("----aop-------"+annotation.pointCut());
+                        methodMap=aopMethods.get(annotation.pointCut());
+                        if(methodMap==null){
+                            methodMap=new HashMap<>();
+                        }
+                        methodMap.put(method,aopObj);
+                        aopMethods.put(annotation.pointCut(), methodMap);
+                    }
+
+                    //After Class
+                    else if(method.isAnnotationPresent(After.class)){
+                        After annotation=method.getAnnotation(After.class);
+                        System.out.println("----aop-------"+annotation.pointCut());
+                        methodMap=aopMethods.get(annotation.pointCut());
+                        if(methodMap==null){
+                            methodMap=new HashMap<>();
+                        }
+                        methodMap.put(method,aopObj);
+                        aopMethods.put(annotation.pointCut(), methodMap);
+                    }
+                }
             }
 
             reflections = new Reflections("org.autumframework");
@@ -176,6 +219,13 @@ public class AutumApplication {
 
                             events.put(paramType.getName(), methods);
                         }
+                    }
+
+                    // Proxy Calling
+                    Map<Method,Object> aopMethodCaching = aopMethods.get(theServiceClass.getClass().getSimpleName() + "." + method.getName());
+                    if(aopMethodCaching != null){
+                        Object proxy=createProxy(theServiceClass,method);
+                        serviceObject.set(j, proxy);
                     }
                 }
 
@@ -328,6 +378,20 @@ public class AutumApplication {
         // Calculate period in milliseconds
         //System.out.println(" [CRON] seconds="+seconds+" minutes="+minutes);
         return (TimeUnit.MINUTES.toSeconds(minutes) + seconds)*1000;
+    }
+
+    //Proxy for AOP
+    private Object createProxy(Object theServiceClass, Method method){
+        Map<Method,Object> aopMethodCaching = aopMethods.get(theServiceClass.getClass().getSimpleName() + "." + method.getName());
+
+        ICustomerService iCustomerService =new CustomerService();
+        Object           instance         = this.getServiceBeanOfType(theServiceClass.getClass());
+        System.out.println(":-::-: "+instance.getClass() +","+theServiceClass.getClass() );
+        Object proxyInstance=  Proxy.newProxyInstance(ICustomerService.class.getClassLoader(),
+                                                      new Class[]{ICustomerService.class},
+                                                      new ApplicationAspect(theServiceClass, aopMethodCaching));
+
+        return proxyInstance;
     }
 
 }

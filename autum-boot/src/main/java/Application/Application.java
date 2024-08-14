@@ -35,5 +35,8 @@ public class Application implements Runnable{
         customerService.addCustomer("Hadush", "had@gmail.com", "123-456-789");
         productService.addProduct("XGL-120", 345.9, 13);
         System.out.println("[Application] Name:"+config.getName()+", Timeout:"+config.getTimeout());
+
+        System.out.println("Aop 1");
+        customerService.testingAop("data");
     }
 }

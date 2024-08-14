@@ -36,6 +36,11 @@ public class ProductService implements IProductService{
         Product product = new Product(id, price, quantity);
         iProductDAO.addProduct(product);
         logger.log();
-        emailSender.sendEmail();
+        try {
+            emailSender.sendEmail();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 }

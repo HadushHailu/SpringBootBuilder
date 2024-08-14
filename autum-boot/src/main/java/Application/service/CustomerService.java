@@ -25,4 +25,10 @@ public class CustomerService implements ICustomerService{
         event.publishEvent(new CustomerEvent(customer));
     }
 
+    @Override
+    public void testingAop(String name){
+        System.out.println("3");
+        System.out.println("Testing from Service:"+name);
+    }
+
 }
