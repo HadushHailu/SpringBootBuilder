@@ -1,10 +1,5 @@
 package org.autumframework.context;
 
-import Application.dao.IProductDAO;
-import Application.dao.ProductDAO;
-import Application.service.CustomerService;
-import Application.service.ICustomerService;
-import Application.service.IProductService;
 import org.autumframework.annotation.EventListener;
 import org.autumframework.annotation.*;
 import org.autumframework.aspect.ApplicationAspect;

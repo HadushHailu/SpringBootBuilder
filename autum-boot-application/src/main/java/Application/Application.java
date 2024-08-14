@@ -7,6 +7,8 @@ import org.autumframework.annotation.Autowired;
 import org.autumframework.annotation.Service;
 import org.autumframework.context.AutumApplication;
 
+import java.io.Serial;
+
 @Service
 public class Application implements Runnable{
     @Autowired
