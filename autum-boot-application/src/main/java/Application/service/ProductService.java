@@ -14,10 +14,12 @@ import org.autumframework.annotation.Service;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-@Service(name = "productService")
+@Service
 public class ProductService implements IProductService{
     @Autowired
+//    @Qualifier("MockProductDAO")
     private IProductDAO iProductDAO;
+
     private ILogger logger;
     private IEmailSender emailSender;
 
@@ -37,5 +39,7 @@ public class ProductService implements IProductService{
     public void addProduct(String id, double price, int quantity){
         Product product = new Product(id, price, quantity);
         iProductDAO.save(product);
+        logger.log("New product added");
+        emailSender.sendEmail();
     }
 }

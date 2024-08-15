@@ -6,7 +6,7 @@ import org.autumframework.aspect.ApplicationAspect;
 import org.autumframework.customClass.CustomMethod;
 import org.autumframework.event.ApplicationEvent;
 import org.autumframework.loader.PropertyLoader;
-import org.autumframework.threading.FixedRateScheduler;
+import org.autumframework.threading.ScheduleExecutor;
 import org.reflections.Reflections;
 
 import java.lang.annotation.Annotation;
@@ -146,12 +146,16 @@ public class AutumApplication {
                         Class<?> theFieldType = field.getType();
 
                         String qualifierValue = "";
-
-                        for(Annotation ant: annotations){
-                            if(ant.annotationType().getSimpleName().equals(Qualifier.class.getSimpleName())){
-                                qualifierValue = ((Qualifier)ant).value();
-                            }
+                        if(field.isAnnotationPresent(Qualifier.class)){
+                            Qualifier qualifier = field.getAnnotation(Qualifier.class);
+                            qualifierValue = qualifier.value();
                         }
+
+//                        for(Annotation ant: annotations){
+//                            if(ant.annotationType().getSimpleName().equals(Qualifier.class.getSimpleName())){
+//                                qualifierValue = ((Qualifier)ant).value();
+//                            }
+//                        }
                         if(!qualifierValue.isEmpty()){
                             Object instance = this.getQualifierBeanOfType(theFieldType, qualifierValue);
                             field.setAccessible(true);
@@ -195,7 +199,7 @@ public class AutumApplication {
                             fixedRate = convertCronToPeriod(scheduledAnnotation.cron());
                             schedulerType = "cron";
                         }
-                        FixedRateScheduler fixedRateScheduler = new FixedRateScheduler(theFinalObject, method, fixedRate);
+                        ScheduleExecutor fixedRateScheduler = new ScheduleExecutor(theFinalObject, method, fixedRate);
                         new Thread(fixedRateScheduler).start();
                     }
 

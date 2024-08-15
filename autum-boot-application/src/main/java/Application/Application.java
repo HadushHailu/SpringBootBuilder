@@ -26,8 +26,31 @@ public class Application implements Runnable{
 
     @Override
     public void run() {
-        customerService.addCustomer("Hadush", "had@gmail.com", "123-456-789");
+        this.autumLogo();
+        this.addCustomer();
+        this.addProduct();
+        this.findCustomer();
+
+        System.out.println("Autum Application="+applicationConfiguration);
+    }
+
+    public void autumLogo(){
+        System.out.println("    **        ******     ******     **   **    ******   ");
+        System.out.println("  **  **      **  **     **  **     **   **    **  **   ");
+        System.out.println(" ********     ******     ******     ******    ******   ");
+        System.out.println(" **    **     **  **     **  **       **      **  **   ");
+        System.out.println(" **    **     ******     **  **       **      ******   ");
+    }
+
+    public void addCustomer(){
+        customerService.addCustomer("John", "johnDao@gmail.com", "123-456-789");
+    }
+
+    public void findCustomer(){
+        customerService.findCustomer("John");
+    }
+
+    public void addProduct(){
         productService.addProduct("XGL-120", 345.9, 13);
-        System.out.println("Application: "+applicationConfiguration);
     }
 }

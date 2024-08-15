@@ -1,5 +1,5 @@
 package Application.integration;
 
 public interface IEmailSender {
-    public void sendEmail() throws InterruptedException;
+    public void sendEmail();
 }

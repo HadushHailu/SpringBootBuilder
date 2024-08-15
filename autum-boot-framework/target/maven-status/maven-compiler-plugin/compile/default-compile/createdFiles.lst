@@ -1,5 +1,4 @@
 org/autumframework/loader/PropertyLoader.class
-org/autumframework/threading/FixedRateScheduler.class
 org/autumframework/aspect/ApplicationAspect.class
 org/autumframework/annotation/Before.class
 org/autumframework/annotation/Value.class
@@ -16,6 +15,7 @@ org/autumframework/annotation/ConfigurationProperties.class
 org/autumframework/annotation/Service.class
 org/autumframework/annotation/Aspect.class
 org/autumframework/annotation/Qualifier.class
+org/autumframework/threading/ScheduleExecutor.class
 org/autumframework/annotation/Scheduled.class
 org/autumframework/annotation/Profile.class
 org/autumframework/context/AutumApplication.class

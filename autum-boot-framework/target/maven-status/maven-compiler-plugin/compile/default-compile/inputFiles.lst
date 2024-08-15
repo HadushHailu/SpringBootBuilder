@@ -18,4 +18,4 @@
 /home/hadush/Documents/autum-boot/autum-boot-framework/src/main/java/org/autumframework/event/ApplicationEvent.java
 /home/hadush/Documents/autum-boot/autum-boot-framework/src/main/java/org/autumframework/loader/PropertyLoader.java
 /home/hadush/Documents/autum-boot/autum-boot-framework/src/main/java/org/autumframework/threading/AsyncExecutor.java
-/home/hadush/Documents/autum-boot/autum-boot-framework/src/main/java/org/autumframework/threading/FixedRateScheduler.java
+/home/hadush/Documents/autum-boot/autum-boot-framework/src/main/java/org/autumframework/threading/ScheduleExecutor.java

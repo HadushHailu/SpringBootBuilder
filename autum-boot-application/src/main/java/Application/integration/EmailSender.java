@@ -14,7 +14,7 @@ public class EmailSender implements IEmailSender{
 
     @Async
     @EventListener
-    public void log(CustomerEvent customerEvent) {
+    public void eventLog(CustomerEvent customerEvent) {
         System.out.println("EmailSender: eventListener Called:");
         try{
             Thread.sleep(10000);

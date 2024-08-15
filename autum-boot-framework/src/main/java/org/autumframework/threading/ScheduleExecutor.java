@@ -2,12 +2,12 @@ package org.autumframework.threading;
 
 import java.lang.reflect.Method;
 
-public class FixedRateScheduler implements Runnable{
+public class ScheduleExecutor implements Runnable{
     private final Object targetObject;
     private final Method targetMethod;
     private final long period;
 
-    public FixedRateScheduler(Object object, Method methodName, long period) {
+    public ScheduleExecutor(Object object, Method methodName, long period) {
         this.targetObject = object;
         this.period = period;
         this.targetMethod = methodName;
